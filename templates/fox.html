@@ -1,0 +1,711 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOX NEXUS — Ultimate Clicker</title>
+<style>
+:root{
+  --accent:#ff8b36;--accent2:#ff477e;--bg:#0a0911;
+  --panel:#171522;--text:#fff5eb;--muted:#aaa3bd;
+  --line:#ffffff14;--glow:#ff8b3640;--scale:1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:
+  radial-gradient(ellipse at 10% 0%,color-mix(in srgb,var(--accent) 20%,transparent),transparent 38%),
+  radial-gradient(ellipse at 100% 30%,color-mix(in srgb,var(--accent2) 16%,transparent),transparent 40%),
+  var(--bg);
+  color:var(--text);font:15px/1.5 system-ui,Segoe UI,sans-serif;
+  min-height:100vh;transition:background .35s,color .25s;
+}
+button,input,select{font:inherit}
+button{color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:active:not(:disabled){transform:scale(.97)}
+*{scrollbar-color:var(--accent) transparent}
+.app{max-width:1400px;margin:auto;padding:18px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:53px;height:53px;border-radius:18px;display:grid;place-items:center;font-size:31px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 30px var(--glow)}
+.brand h1{font-size:21px;margin:0;letter-spacing:1.5px}
+.brand small{color:var(--muted)}
+.top-right{display:flex;gap:8px;flex-wrap:wrap}
+.pill,.btn,.tab,.setting,.upgrade,.achievement{
+  border:1px solid var(--line);background:#ffffff08;border-radius:13px;
+}
+.pill{padding:9px 13px;color:var(--muted);font-size:12px}
+.btn{padding:11px 14px;transition:.18s}
+.btn:hover,.tab:hover,.upgrade:hover:not(:disabled){border-color:var(--accent);background:#ffffff0c}
+.primary{background:linear-gradient(110deg,var(--accent),var(--accent2));border:0;font-weight:800;color:#fff;box-shadow:0 7px 24px var(--glow)}
+.primary:hover{filter:brightness(1.1)}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:17px;align-items:start}
+.panel{background:color-mix(in srgb,var(--panel) 93%,transparent);border:1px solid var(--line);border-radius:23px;padding:20px;min-width:0;box-shadow:0 18px 50px #0002;backdrop-filter:blur(15px)}
+.panel+.panel{margin-top:17px}
+h2{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 16px}
+.hero{position:relative;overflow:hidden;text-align:center;background:radial-gradient(ellipse at 50% 30%,var(--glow),transparent 65%),var(--panel)}
+.hero-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;text-align:left}
+.badge{font-size:11px;border:1px solid var(--line);border-radius:100px;padding:6px 10px;color:var(--muted)}
+.coins{font-size:clamp(35px,6vw,65px);line-height:1.15;font-weight:900;letter-spacing:-2px;margin:22px 0 2px;overflow-wrap:anywhere;background:linear-gradient(90deg,var(--accent),#ffe1a5,var(--accent2));background-size:200%;background-clip:text;color:transparent;animation:gradient 7s linear infinite}
+@keyframes gradient{to{background-position:200%}}
+.label{font-size:12px;color:var(--muted)}
+.mini-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:22px 0}
+.stat{border:1px solid var(--line);background:#ffffff05;border-radius:15px;padding:12px 8px;min-width:0}
+.stat strong{display:block;font-size:20px;overflow-wrap:anywhere}
+.stat span{font-size:10px;color:var(--muted);letter-spacing:.6px}
+.fox-stage{height:300px;border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:21px;display:grid;place-items:center;position:relative;overflow:hidden;background:radial-gradient(circle,var(--glow),transparent 66%),#00000012}
+.ring{position:absolute;width:225px;height:225px;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:50%;animation:spin 18s linear infinite}
+.ring:before,.ring:after{content:"";position:absolute;inset:17px;border:1px dashed color-mix(in srgb,var(--accent2) 35%,transparent);border-radius:50%}
+.ring:after{inset:37px;border-style:solid}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fox-button{position:relative;z-index:2;border:0;background:transparent;font-size:clamp(95px,15vw,145px);filter:drop-shadow(0 0 25px var(--glow));user-select:none;touch-action:manipulation;transition:filter .15s}
+.fox-button:hover{filter:drop-shadow(0 0 38px var(--accent))}
+.fox-button.boop{animation:boop .2s ease}
+@keyframes boop{0%{transform:scale(1)}40%{transform:scale(.83) rotate(-7deg)}75%{transform:scale(1.12) rotate(5deg)}100%{transform:scale(1)}}
+.particle{position:absolute;z-index:3;pointer-events:none;font-weight:900;color:var(--accent);text-shadow:0 0 12px var(--glow);animation:fly .8s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--x),var(--y)) scale(.25) rotate(30deg);opacity:0}}
+.progress{height:7px;border-radius:20px;background:#ffffff10;overflow:hidden;margin-top:9px}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .2s}
+.xp-line{display:flex;justify-content:space-between;gap:10px;margin-top:18px;font-size:12px;color:var(--muted)}
+.hero-actions{display:flex;gap:9px;margin-top:14px}
+.hero-actions button{flex:1}
+.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:15px;padding-bottom:3px}
+.tab{padding:9px 13px;white-space:nowrap;color:var(--muted)}
+.tab.active{color:white;background:linear-gradient(120deg,var(--accent),var(--accent2));border-color:transparent}
+.page{display:none}
+.page.active{display:block;animation:appear .18s ease}
+@keyframes appear{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:none}}
+.upgrades{display:grid;gap:10px}
+.upgrade{padding:13px;display:flex;align-items:center;gap:12px;text-align:left;width:100%;transition:background .15s,border-color .15s}
+.up-icon{width:48px;height:48px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:var(--glow);font-size:25px}
+.up-info{flex:1;min-width:0}
+.up-info strong{display:block}
+.up-info small{display:block;color:var(--muted);font-size:12px}
+.up-price{white-space:nowrap;font-weight:800;font-size:12px;color:var(--accent)}
+.section-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:13px}
+.section-head h2{margin:0}
+.empty{padding:22px;text-align:center;color:var(--muted);font-size:13px}
+.settings-grid{display:grid;gap:13px}
+.setting{padding:14px}
+.setting label{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:9px;font-size:13px}
+.setting output{color:var(--accent);font-weight:800}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.colors{display:flex;gap:10px;flex-wrap:wrap}
+.color-dot{width:34px;height:34px;border:2px solid #ffffff30;border-radius:50%;background:var(--c);cursor:pointer}
+.color-dot.selected{outline:2px solid white;outline-offset:3px}
+.themes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.theme{padding:13px;text-align:left;border:1px solid var(--line);border-radius:13px;background:#ffffff06}
+.theme.selected{border-color:var(--accent);background:var(--glow)}
+.theme strong{display:block}.theme small{color:var(--muted)}
+.achievements{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.achievement{padding:13px}
+.achievement.locked{opacity:.48;filter:grayscale(.8)}
+.achievement .a-icon{font-size:25px}
+.achievement strong{display:block;font-size:12px}
+.achievement small{color:var(--muted);font-size:11px}
+.game-box{border:1px solid var(--line);border-radius:17px;padding:18px;text-align:center;background:#ffffff05}
+.game-target{font-size:64px;min-height:115px;width:100%;border:0;background:transparent}
+.game-result{min-height:24px;color:var(--accent);font-weight:800}
+.log{max-height:155px;overflow:auto;display:grid;gap:7px;font-size:12px;color:var(--muted)}
+.log div{padding-bottom:7px;border-bottom:1px solid var(--line)}
+.footer{text-align:center;padding:23px;color:#79728a;font-size:11px}
+.toast{position:fixed;z-index:20;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#201b2d;border:1px solid var(--accent);border-radius:13px;padding:12px 18px;box-shadow:0 10px 40px #0008;transition:.2s;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+body.compact .panel{padding:13px;border-radius:16px}
+body.compact .panel+.panel{margin-top:10px}
+body.compact .fox-stage{height:220px}
+body.no-motion *,body.no-motion *:before,body.no-motion *:after{animation:none!important;transition:none!important}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.app{padding:11px}.panel{padding:15px}.fox-stage{height:255px}}
+@media(max-width:440px){.mini-stats{gap:5px}.stat strong{font-size:17px}.stat span{font-size:9px}.achievements{grid-template-columns:1fr}.coins{letter-spacing:-1px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand">
+    <div class="logo">🦊</div>
+    <div><h1>FOX <span style="color:var(--accent)">NEXUS</span></h1><small>ULTIMATE CLICKER · BUILD 1.0</small></div>
+  </div>
+  <div class="top-right">
+    <div class="pill">✦ УРОВЕНЬ <b id="topLevel">1</b></div>
+    <button class="btn" id="soundBtn">🔊 Звук</button>
+    <button class="btn" id="saveBtn">💾 Сохранить</button>
+  </div>
+</header>
+
+<div class="grid">
+<main>
+<section class="panel hero">
+  <div class="hero-top"><span class="badge" id="rank">🦊 Лисёнок</span><span class="badge" id="combo">COMBO ×1</span></div>
+  <div class="coins" id="coins">0</div><div class="label">ЛИСЬИ МОНЕТЫ</div>
+  <div class="mini-stats">
+    <div class="stat"><strong id="power">1</strong><span>ЗА КЛИК</span></div>
+    <div class="stat"><strong id="income">0</strong><span>В СЕКУНДУ</span></div>
+    <div class="stat"><strong id="allClicks">0</strong><span>КЛИКОВ</span></div>
+  </div>
+  <div class="fox-stage" id="stage">
+    <div class="ring"></div>
+    <button class="fox-button" id="fox" aria-label="Кликнуть по лисе">🦊</button>
+  </div>
+  <div class="xp-line"><span id="levelText">Уровень 1</span><span id="xpText">0 / 50 XP</span></div>
+  <div class="progress"><div id="xpBar"></div></div>
+  <div class="hero-actions">
+    <button class="btn primary" id="clickHelp">✦ КЛИКАЙ!</button>
+    <button class="btn" id="bonusBtn">🎁 Бонус</button>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><h2>⚡ Активность</h2><span class="badge" id="sessionTime">00:00</span></div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-page="shop">🛒 Магазин</button>
+    <button class="tab" data-page="skins">🎨 Облики</button>
+    <button class="tab" data-page="games">🎮 Мини-игры</button>
+    <button class="tab" data-page="achievements">🏆 Награды</button>
+    <button class="tab" data-page="settings">⚙ Настройки</button>
+  </div>
+
+  <div class="page active" id="page-shop">
+    <div class="section-head"><h2>Улучшения</h2><span class="badge" id="shopCount">0 куплено</span></div>
+    <div class="upgrades" id="upgrades"></div>
+  </div>
+
+  <div class="page" id="page-skins">
+    <h2>Выбери своего лиса</h2>
+    <div class="upgrades" id="skins"></div>
+    <div class="divider"></div>
+    <h2>Цвет энергии</h2>
+    <div class="colors" id="colors"></div>
+  </div>
+
+  <div class="page" id="page-games">
+    <div class="game-box">
+      <h2>⚡ Реакция лисы</h2>
+      <p class="label">Запусти испытание, дождись зелёного сигнала и нажми кнопку как можно быстрее. Фальстарт не засчитывается.</p>
+      <button class="btn primary" id="reactionStart">Начать испытание</button>
+      <button class="game-target" id="reactionTarget" disabled>🦊</button>
+      <div class="game-result" id="reactionResult">Готов?</div>
+      <div class="label">Награда за успех: 25 монет + 10 XP</div>
+    </div>
+    <div class="divider"></div>
+    <div class="game-box">
+      <h2>🌠 Лисий сундук</h2>
+      <p class="label">Раз в 60 секунд можно открыть сундук и получить случайную награду.</p>
+      <button class="btn primary" id="chestBtn">🎁 Открыть сундук</button>
+      <div class="game-result" id="chestResult"></div>
+    </div>
+  </div>
+
+  <div class="page" id="page-achievements">
+    <div class="section-head"><h2>Достижения</h2><span class="badge" id="achievementCount">0 / 6</span></div>
+    <div class="achievements" id="achievements"></div>
+  </div>
+
+  <div class="page" id="page-settings">
+    <h2>Персонализация</h2>
+    <div class="settings-grid">
+      <div class="setting">
+        <label for="volume">Громкость <output id="volumeOut">35%</output></label>
+        <input id="volume" type="range" min="0" max="100" value="35">
+      </div>
+      <div class="setting">
+        <label for="scale">Размер интерфейса <output id="scaleOut">100%</output></label>
+        <input id="scale" type="range" min="85" max="115" value="100">
+      </div>
+      <div class="setting">
+        <label for="particles">Эффекты частиц <input id="particles" type="checkbox" checked></label>
+        <label for="motion">Анимации <input id="motion" type="checkbox" checked></label>
+        <label for="compact">Компактный режим <input id="compact" type="checkbox"></label>
+      </div>
+      <div class="setting">
+        <label for="numberFormat">Формат чисел</label>
+        <select id="numberFormat" style="width:100%;background:#211c30;color:white;border:1px solid var(--line);border-radius:9px;padding:10px">
+          <option value="full">Полный: 1 250 000</option>
+          <option value="short">Краткий: 1.25M</option>
+        </select>
+      </div>
+      <div class="setting">
+        <strong>💾 Сохранение</strong>
+        <p class="label">Прогресс хранится в локальном хранилище этого браузера.</p>
+        <div class="hero-actions">
+          <button class="btn" id="exportBtn">Экспорт</button>
+          <button class="btn" id="importBtn">Импорт</button>
+        </div>
+      </div>
+      <div class="setting">
+        <strong>⚠ Сброс прогресса</strong>
+        <p class="label">Удалит монеты, покупки и уровни. Сначала можно экспортировать сохранение.</p>
+        <button class="btn" id="resetBtn">Сбросить игру</button>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<aside>
+<section class="panel">
+  <h2>🧬 Лисий статус</h2>
+  <div class="stat"><strong id="rankAside">Лисёнок</strong><span>ТВОЙ ТИТУЛ</span></div>
+  <div class="mini-stats">
+    <div class="stat"><strong id="crit">5%</strong><span>КРИТ ШАНС</span></div>
+    <div class="stat"><strong id="mult">×1</strong><span>МНОЖИТЕЛЬ</span></div>
+    <div class="stat"><strong id="totalEarned">0</strong><span>ЗАРАБОТАНО</span></div>
+  </div>
+  <div class="progress"><div id="levelProgress"></div></div>
+  <p class="label" id="rankDesc">Начало великого лисьего пути.</p>
+</section>
+<section class="panel">
+  <div class="section-head"><h2>📜 Лента событий</h2><button class="btn" id="clearLog">Очистить</button></div>
+  <div class="log" id="log"><div>🦊 Добро пожаловать в FOX NEXUS!</div></div>
+</section>
+<section class="panel">
+  <h2>⌨ Управление</h2>
+  <p class="label">Кликни по лисе, чтобы зарабатывать монеты. Покупай улучшения, чтобы увеличивать доход. Уровни и достижения дают дополнительные цели.</p>
+  <p class="label"><kbd>Space</kbd> — клик по лисе, если ты не вводишь текст.</p>
+</section>
+</aside>
+</div>
+<footer class="footer">FOX NEXUS · Single-file browser game · Your fox, your rules 🦊</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input id="fileInput" type="file" accept=".json,application/json" hidden>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const fmt=(n)=>{
+  n=Math.floor(n);
+  if($("numberFormat")?.value==="short"){
+    if(n>=1e12)return (n/1e12).toFixed(2)+"T";
+    if(n>=1e9)return (n/1e9).toFixed(2)+"B";
+    if(n>=1e6)return (n/1e6).toFixed(2)+"M";
+    if(n>=1e3)return (n/1e3).toFixed(2)+"K";
+  }
+  return n.toLocaleString("ru-RU");
+};
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const STORE="fox_nexus_save_v1";
+
+const defaultState=()=>({
+  coins:0,totalEarned:0,clicks:0,manual:0,level:1,xp:0,
+  power:1,auto:0,crit:5,mult:1,combo:1,
+  upgrades:{},skins:{fox:true},skin:"fox",color:"#ff8b36",
+  sound:true,volume:35,scale:100,particles:true,motion:true,
+  compact:false,numberFormat:"full",achievements:[],
+  bonusReady:true,lastChest:0,lastSave:Date.now(),
+  sessionStart:Date.now(),lastClick:0,streak:0
+});
+
+let S=defaultState();
+let audioCtx=null,toastTimer=null,autoTimer=null,renderTimer=null;
+let reactionTimer=null,reactionMode="idle",reactionStart=0;
+let pendingExport=false;
+
+const ITEMS=[
+ {id:"paw",icon:"🐾",name:"Мощная лапка",desc:"+1 монета за каждый клик",base:15,growth:1.55,kind:"power",value:1},
+ {id:"claw",icon:"🗡️",name:"Киберкогти",desc:"+5 монет за клик",base:100,growth:1.65,kind:"power",value:5},
+ {id:"fire",icon:"🔥",name:"Огненный хвост",desc:"+25 монет за клик",base:850,growth:1.75,kind:"power",value:25},
+ {id:"drone",icon:"🤖",name:"Дрон-помощник",desc:"+1 монета в секунду",base:75,growth:1.6,kind:"auto",value:1},
+ {id:"pack",icon:"🐺",name:"Лисья стая",desc:"+5 монет в секунду",base:500,growth:1.7,kind:"auto",value:5},
+ {id:"reactor",icon:"⚛️",name:"Плазменный реактор",desc:"+25 монет в секунду",base:3200,growth:1.8,kind:"auto",value:25},
+ {id:"luck",icon:"🍀",name:"Удачливая лапа",desc:"+2% к шансу критического клика",base:250,growth:2.0,kind:"crit",value:2},
+ {id:"core",icon:"💎",name:"Ядро Нексуса",desc:"+0.25 к множителю дохода",base:1200,growth:2.15,kind:"mult",value:.25}
+];
+const SKINS=[
+ {id:"fox",name:"Огненная лиса",icon:"🦊",price:0,desc:"Классика. Огонь в сердце."},
+ {id:"snow",name:"Снежный лис",icon:"🦊",price:500,desc:"Холодный стиль." ,color:"#8fdcff"},
+ {id:"void",name:"Лиса Бездны",icon:"🌌",price:2500,desc:"Космическая энергия.",color:"#a78bfa"},
+ {id:"cyber",name:"Кибер-лис",icon:"🤖",price:9000,desc:"Технологии будущего.",color:"#52ffd0"},
+ {id:"gold",name:"Золотой лис",icon:"🦊",price:30000,desc:"Чистое золото.",color:"#ffd166"},
+ {id:"demon",name:"Демон-лис",icon:"😈",price:100000,desc:"Сила легенды.",color:"#ff4d74"}
+];
+const COLORS=["#ff8b36","#ff477e","#a78bfa","#51e5ff","#56f0b1","#ffd166","#f3f4f6","#f05cff"];
+const ACHS=[
+ {id:"click1",icon:"🐾",name:"Первый след",desc:"Сделать первый клик",test:()=>S.clicks>=1,reward:10},
+ {id:"click100",icon:"💯",name:"Разминка",desc:"Сделать 100 кликов",test:()=>S.clicks>=100,reward:100},
+ {id:"coins1k",icon:"💰",name:"Богач",desc:"Заработать 1 000 монет",test:()=>S.totalEarned>=1000,reward:150},
+ {id:"level5",icon:"⭐",name:"Восхождение",desc:"Достичь 5 уровня",test:()=>S.level>=5,reward:250},
+ {id:"auto10",icon:"🤖",name:"Машина",desc:"Зарабатывать 10 монет/сек",test:()=>S.auto>=10,reward:300},
+ {id:"million",icon:"👑",name:"Лисий магнат",desc:"Заработать 1 000 000 монет",test:()=>S.totalEarned>=1000000,reward:5000}
+];
+
+function toast(msg){
+ const el=$("toast");el.textContent=msg;el.classList.add("show");
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2300);
+}
+function log(msg){
+ const row=document.createElement("div");
+ row.textContent=new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})+" · "+msg;
+ $("log").prepend(row);
+ while($("log").children.length>25)$("log").lastElementChild.remove();
+}
+function beep(freq=600,duration=.07,wave="sine"){
+ if(!S.sound||S.volume<=0)return;
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  if(!audioCtx)audioCtx=new AC();
+  if(audioCtx.state==="suspended")audioCtx.resume();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=wave;o.frequency.setValueAtTime(freq,audioCtx.currentTime);
+  g.gain.setValueAtTime(.0001,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.12*S.volume/100,audioCtx.currentTime+.01);
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+duration);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start();o.stop(audioCtx.currentTime+duration+.02);
+ }catch(e){}
+}
+function applyAppearance(){
+ document.documentElement.style.setProperty("--accent",S.color);
+ document.documentElement.style.setProperty("--accent2",S.color==="#ff8b36"?"#ff477e":S.color);
+ document.documentElement.style.setProperty("--glow",S.color+"40");
+ document.documentElement.style.setProperty("--scale",S.scale/100);
+ document.body.style.fontSize=(15*S.scale/100)+"px";
+ document.body.classList.toggle("compact",S.compact);
+ document.body.classList.toggle("no-motion",!S.motion);
+ $("soundBtn").textContent=S.sound?"🔊 Звук":"🔇 Звук";
+ $("volume").value=S.volume;$("volumeOut").textContent=S.volume+"%";
+ $("scale").value=S.scale;$("scaleOut").textContent=S.scale+"%";
+ $("particles").checked=S.particles;$("motion").checked=S.motion;
+ $("compact").checked=S.compact;$("numberFormat").value=S.numberFormat;
+}
+function levelNeed(){return Math.floor(50*Math.pow(S.level,1.45))}
+function addXP(n){
+ S.xp+=n;
+ while(S.xp>=levelNeed()){
+  S.xp-=levelNeed();S.level++;
+  const gift=S.level*25;
+  S.coins+=gift;S.totalEarned+=gift;
+  toast("⭐ Уровень "+S.level+"! +"+fmt(gift)+" монет");
+  log("Новый уровень "+S.level+" · бонус "+fmt(gift));
+  beep(780,.14);setTimeout(()=>beep(1050,.18),100);
+ }
+}
+function addCoins(amount,withXP=true){
+ if(!Number.isFinite(amount)||amount<=0)return;
+ S.coins+=amount;S.totalEarned+=amount;
+ if(withXP)addXP(Math.max(1,Math.floor(Math.sqrt(amount))));
+}
+function clickPower(){
+ return Math.max(1,Math.floor((S.power+Math.floor(S.combo/10))*S.mult));
+}
+function doClick(event,source="manual"){
+ const now=Date.now();
+ if(source==="manual"){
+  if(now-S.lastClick<25)return;
+  if(now-S.lastClick<900)S.streak++;else S.streak=0;
+  S.combo=clamp(1+Math.floor(S.streak/5),1,10);
+  S.lastClick=now;S.clicks++;S.manual++;
+ }
+ let amount=clickPower();
+ const crit=Math.random()*100<S.crit;
+ if(crit)amount*=3;
+ addCoins(amount);
+ if(S.particles&&source==="manual")particle(event,crit?"CRIT! +"+fmt(amount):"+"+fmt(amount));
+ $("combo").textContent="COMBO ×"+S.combo;
+ if(source==="manual"){
+  const fox=$("fox");fox.classList.remove("boop");void fox.offsetWidth;fox.classList.add("boop");
+  beep(crit?1000:550,crit?.11:.045,crit?"triangle":"sine");
+ }
+ checkAchievements();render();
+}
+function particle(event,text){
+ const stage=$("stage"),p=document.createElement("span");
+ p.className="particle";p.textContent=text;
+ const r=stage.getBoundingClientRect();
+ const x=event&&Number.isFinite(event.clientX)?event.clientX-r.left:r.width/2;
+ const y=event&&Number.isFinite(event.clientY)?event.clientY-r.top:r.height/2;
+ p.style.left=clamp(x,5,r.width-50)+"px";p.style.top=clamp(y,5,r.height-30)+"px";
+ p.style.setProperty("--x",(Math.random()*90-45)+"px");
+ p.style.setProperty("--y",(-50-Math.random()*65)+"px");
+ stage.append(p);p.addEventListener("animationend",()=>p.remove(),{once:true});
+}
+function price(item){return Math.floor(item.base*Math.pow(item.growth,S.upgrades[item.id]||0))}
+function buy(id){
+ const item=ITEMS.find(i=>i.id===id);if(!item)return;
+ const cost=price(item);
+ if(S.coins<cost){toast("Не хватает монет! Нужно ещё "+fmt(cost-S.coins));beep(180,.1,"square");return}
+ S.coins-=cost;S.upgrades[id]=(S.upgrades[id]||0)+1;
+ if(item.kind==="power")S.power+=item.value;
+ if(item.kind==="auto")S.auto+=item.value;
+ if(item.kind==="crit")S.crit=clamp(S.crit+item.value,0,75);
+ if(item.kind==="mult")S.mult+=item.value;
+ addXP(Math.max(2,Math.floor(cost/10)));
+ log("Куплено: "+item.name+" · уровень "+S.upgrades[id]);
+ toast("Куплено: "+item.name+"!");
+ beep(720,.08);setTimeout(()=>beep(920,.1),75);
+ checkAchievements();render();
+}
+function renderShop(){
+ const root=$("upgrades");root.replaceChildren();
+ let count=0;
+ for(const item of ITEMS){
+  const lv=S.upgrades[item.id]||0;count+=lv;
+  const cost=price(item),can=S.coins>=cost;
+  const b=document.createElement("button");
+  b.className="upgrade";b.dataset.buy=item.id;b.disabled=!can;
+  const icon=document.createElement("span");icon.className="up-icon";icon.textContent=item.icon;
+  const info=document.createElement("span");info.className="up-info";
+  const name=document.createElement("strong");name.textContent=item.name+" · ур. "+lv;
+  const desc=document.createElement("small");desc.textContent=item.desc;
+  info.append(name,desc);
+  const priceEl=document.createElement("span");priceEl.className="up-price";priceEl.textContent="🪙 "+fmt(cost);
+  b.append(icon,info,priceEl);root.append(b);
+ }
+ $("shopCount").textContent=count+" куплено";
+}
+function renderSkins(){
+ const root=$("skins");root.replaceChildren();
+ for(const skin of SKINS){
+  const owned=!!S.skins[skin.id],selected=S.skin===skin.id;
+  const b=document.createElement("button");b.className="upgrade";b.dataset.skin=skin.id;
+  const icon=document.createElement("span");icon.className="up-icon";icon.textContent=skin.icon;
+  if(skin.color)icon.style.color=skin.color;
+  const info=document.createElement("span");info.className="up-info";
+  const n=document.createElement("strong");n.textContent=skin.name+(selected?" ✓":"");
+  const d=document.createElement("small");d.textContent=skin.desc;
+  info.append(n,d);
+  const priceEl=document.createElement("span");priceEl.className="up-price";
+  priceEl.textContent=selected?"Выбран":owned?"Надеть":"🪙 "+fmt(skin.price);
+  b.append(icon,info,priceEl);root.append(b);
+ }
+ $("colors").replaceChildren();
+ for(const color of COLORS){
+  const b=document.createElement("button");b.className="color-dot"+(S.color===color?" selected":"");
+  b.style.setProperty("--c",color);b.title=color;b.dataset.color=color;b.setAttribute("aria-label","Цвет "+color);
+  $("colors").append(b);
+ }
+}
+function selectSkin(id){
+ const skin=SKINS.find(s=>s.id===id);if(!skin)return;
+ if(!S.skins[id]){
+  if(S.coins<skin.price){toast("Нужно "+fmt(skin.price)+" монет");return}
+  S.coins-=skin.price;S.skins[id]=true;log("Открыт облик: "+skin.name);
+ }
+ S.skin=id;$("fox").textContent=skin.id==="void"?"🌌":skin.id==="cyber"?"🤖":skin.id==="demon"?"😈":"🦊";
+ if(skin.color)S.color=skin.color;
+ applyAppearance();render();toast("Облик выбран: "+skin.name);beep(800,.1);
+}
+function checkAchievements(){
+ for(const a of ACHS){
+  if(!S.achievements.includes(a.id)&&a.test()){
+   S.achievements.push(a.id);S.coins+=a.reward;S.totalEarned+=a.reward;
+   log("Достижение: "+a.name+" · награда "+fmt(a.reward));
+   toast("🏆 "+a.name+" · +"+fmt(a.reward));
+   beep(900,.15);addXP(10);
+  }
+ }
+}
+function renderAchievements(){
+ const root=$("achievements");root.replaceChildren();
+ for(const a of ACHS){
+  const done=S.achievements.includes(a.id);
+  const box=document.createElement("div");box.className="achievement"+(done?"":" locked");
+  const icon=document.createElement("div");icon.className="a-icon";icon.textContent=done?a.icon:"🔒";
+  const n=document.createElement("strong");n.textContent=a.name;
+  const d=document.createElement("small");d.textContent=done?"Выполнено ✓":a.desc+" · "+fmt(a.reward)+" монет";
+  box.append(icon,n,d);root.append(box);
+ }
+ $("achievementCount").textContent=S.achievements.length+" / "+ACHS.length;
+}
+function rankName(){
+ if(S.level>=30)return "Лисий бог";
+ if(S.level>=20)return "Повелитель Нексуса";
+ if(S.level>=12)return "Кибер-лис";
+ if(S.level>=7)return "Лисий магнат";
+ if(S.level>=3)return "Хитрый лис";
+ return "Лисёнок";
+}
+function render(){
+ $("coins").textContent=fmt(S.coins);
+ $("power").textContent=fmt(clickPower());
+ $("income").textContent=fmt(S.auto*S.mult);
+ $("allClicks").textContent=fmt(S.clicks);
+ $("topLevel").textContent=S.level;
+ $("levelText").textContent="Уровень "+S.level;
+ $("xpText").textContent=fmt(S.xp)+" / "+fmt(levelNeed())+" XP";
+ $("xpBar").style.width=clamp(S.xp/levelNeed()*100,0,100)+"%";
+ $("levelProgress").style.width=clamp(S.xp/levelNeed()*100,0,100)+"%";
+ $("crit").textContent=S.crit+"%";
+ $("mult").textContent="×"+S.mult.toFixed(2).replace(/0+$/,"").replace(/\.$/,"");
+ $("totalEarned").textContent=fmt(S.totalEarned);
+ $("rank").textContent="🦊 "+rankName();
+ $("rankAside").textContent=rankName();
+ $("rankDesc").textContent="Уровень "+S.level+" · каждый клик приближает к вершине.";
+ const sec=Math.floor((Date.now()-S.sessionStart)/1000);
+ $("sessionTime").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+ renderShop();renderSkins();renderAchievements();
+}
+function save(silent=false){
+ try{
+  S.lastSave=Date.now();localStorage.setItem(STORE,JSON.stringify(S));
+  if(!silent){toast("💾 Прогресс сохранён");log("Игра сохранена");}
+ }catch(e){if(!silent)toast("Не удалось сохранить. Проверь настройки браузера.");}
+}
+function load(){
+ try{
+  const raw=localStorage.getItem(STORE);if(!raw)return;
+  const data=JSON.parse(raw);if(!data||typeof data!=="object")return;
+  const base=defaultState();
+  S={...base,...data,
+   upgrades:{...base.upgrades,...(data.upgrades||{})},
+   skins:{...base.skins,...(data.skins||{})},
+   achievements:Array.isArray(data.achievements)?data.achievements:[],
+   sessionStart:Date.now()
+  };
+  // Защита от некорректных значений в сохранении.
+  for(const k of ["coins","totalEarned","clicks","manual","level","xp","power","auto","crit","mult","volume","scale"]){
+   if(!Number.isFinite(S[k])||S[k]<0)S[k]=base[k];
+  }
+  S.level=Math.max(1,Math.floor(S.level));
+  S.crit=clamp(S.crit,0,75);S.volume=clamp(S.volume,0,100);S.scale=clamp(S.scale,85,115);
+ }catch(e){S=defaultState();}
+}
+function exportSave(){
+ const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="fox-nexus-save.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Файл сохранения подготовлен");
+}
+function switchPage(page){
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+page));
+}
+function stopReaction(){
+ clearTimeout(reactionTimer);reactionTimer=null;reactionMode="idle";
+ $("reactionTarget").disabled=true;$("reactionTarget").textContent="🦊";
+ $("reactionTarget").style.background="transparent";
+}
+function startReaction(){
+ stopReaction();reactionMode="waiting";
+ $("reactionStart").disabled=true;$("reactionTarget").disabled=false;
+ $("reactionTarget").textContent="⏳";$("reactionResult").textContent="Жди зелёного сигнала...";
+ $("reactionTarget").style.background="#ffbd2412";
+ reactionTimer=setTimeout(()=>{
+  if(reactionMode!=="waiting")return;
+  reactionMode="ready";reactionStart=performance.now();
+  $("reactionTarget").textContent="🟢 ЖМИ!";
+  $("reactionTarget").style.background="#38ef8c24";
+  beep(900,.1);
+ },1000+Math.random()*2500);
+}
+function reactionClick(){
+ if(reactionMode==="waiting"){
+  stopReaction();$("reactionResult").textContent="Фальстарт! Попробуй ещё раз.";
+  $("reactionStart").disabled=false;beep(200,.1,"square");return;
+ }
+ if(reactionMode!=="ready")return;
+ const ms=Math.round(performance.now()-reactionStart);
+ stopReaction();$("reactionStart").disabled=false;
+ if(ms<800){
+  addCoins(25);addXP(10);
+  $("reactionResult").textContent=ms+" мс · Отличная реакция! +25 🪙";
+  log("Мини-игра: реакция "+ms+" мс · награда 25 монет");
+  toast("🎯 Испытание пройдено!");
+ }else{
+  $("reactionResult").textContent=ms+" мс · Можно быстрее!";
+ }
+ checkAchievements();render();save(true);
+}
+function openChest(){
+ const now=Date.now(),remaining=60000-(now-S.lastChest);
+ if(S.lastChest&&remaining>0){
+  $("chestResult").textContent="Следующий сундук через "+Math.ceil(remaining/1000)+" сек.";
+  return;
+ }
+ const reward=25+Math.floor(Math.random()*176)+S.level*5;
+ S.lastChest=now;addCoins(reward);addXP(8);
+ $("chestResult").textContent="🎉 Ты получил "+fmt(reward)+" монет!";
+ log("Открыт лисий сундук · +"+fmt(reward));
+ toast("🎁 Сундук: +"+fmt(reward));beep(820,.13);
+ checkAchievements();render();save(true);
+}
+
+/* Все покупки обрабатываются через один делегированный обработчик. */
+$("upgrades").addEventListener("click",e=>{
+ const b=e.target.closest("[data-buy]");if(b&&!b.disabled)buy(b.dataset.buy);
+});
+$("skins").addEventListener("click",e=>{
+ const b=e.target.closest("[data-skin]");if(b)selectSkin(b.dataset.skin);
+});
+$("colors").addEventListener("click",e=>{
+ const b=e.target.closest("[data-color]");if(!b)return;
+ S.color=b.dataset.color;applyAppearance();renderSkins();save(true);beep(600,.05);
+});
+$("fox").addEventListener("click",e=>doClick(e));
+$("clickHelp").addEventListener("click",()=>{$("fox").focus();toast("Жми на большую лису 🦊")});
+$("bonusBtn").addEventListener("click",()=>{
+ if(!S.bonusReady){toast("Бонус уже получен в этой сессии!");return}
+ S.bonusReady=false;const n=100+S.level*20;
+ addCoins(n);addXP(15);toast("🎁 Ежедневный бонус: +"+fmt(n));
+ log("Получен стартовый бонус "+fmt(n));render();save(true);
+});
+$("tabs").addEventListener("click",e=>{
+ const b=e.target.closest("[data-page]");if(b)switchPage(b.dataset.page);
+});
+$("soundBtn").addEventListener("click",()=>{
+ S.sound=!S.sound;applyAppearance();save(true);
+ if(S.sound)beep(700,.08);else toast("Звук выключен");
+});
+$("saveBtn").addEventListener("click",()=>save());
+$("clearLog").addEventListener("click",()=>$("log").replaceChildren());
+$("volume").addEventListener("input",e=>{S.volume=+e.target.value;applyAppearance();});
+$("volume").addEventListener("change",()=>save(true));
+$("scale").addEventListener("input",e=>{S.scale=+e.target.value;applyAppearance();});
+$("scale").addEventListener("change",()=>save(true));
+$("particles").addEventListener("change",e=>{S.particles=e.target.checked;save(true)});
+$("motion").addEventListener("change",e=>{S.motion=e.target.checked;applyAppearance();save(true)});
+$("compact").addEventListener("change",e=>{S.compact=e.target.checked;applyAppearance();save(true)});
+$("numberFormat").addEventListener("change",e=>{S.numberFormat=e.target.value;render();save(true)});
+$("reactionStart").addEventListener("click",startReaction);
+$("reactionTarget").addEventListener("click",reactionClick);
+$("chestBtn").addEventListener("click",openChest);
+$("exportBtn").addEventListener("click",exportSave);
+$("importBtn").addEventListener("click",()=>$("fileInput").click());
+$("fileInput").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!data||typeof data!=="object"||!Number.isFinite(data.coins)||!data.upgrades||!data.skins)throw Error("invalid");
+  if(!confirm("Заменить текущий прогресс импортированным сохранением?"))return;
+  localStorage.setItem(STORE,JSON.stringify(data));load();applyAppearance();render();toast("Сохранение импортировано");log("Прогресс импортирован");
+ }catch(err){toast("Не удалось прочитать файл сохранения");}
+ e.target.value="";
+});
+$("resetBtn").addEventListener("click",()=>{
+ if(!confirm("Точно удалить весь прогресс? Экспортируй сохранение, если хочешь его оставить."))return;
+ if(!confirm("Последнее подтверждение: сбросить игру?"))return;
+ localStorage.removeItem(STORE);S=defaultState();applyAppearance();render();
+ log("Начата новая игра");toast("Новая лисья жизнь 🦊");
+});
+document.addEventListener("keydown",e=>{
+ if(e.code==="Space"&&!e.repeat&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement.tagName)){
+  e.preventDefault();doClick(null);
+ }
+ if(e.key==="Escape"&&reactionMode!=="idle"){
+  stopReaction();$("reactionStart").disabled=false;$("reactionResult").textContent="Испытание отменено";
+ }
+});
+window.addEventListener("beforeunload",()=>save(true));
+
+/* Экономика: отдельный единственный таймер пассивного дохода. */
+function economyTick(){
+ if(S.auto>0){
+  const earned=S.auto*S.mult;
+  S.coins+=earned;S.totalEarned+=earned;
+  // XP за пассивный доход начисляется реже.
+  if(Math.floor(Date.now()/1000)%5===0)addXP(1);
+ }
+ checkAchievements();
+ render();
+}
+load();applyAppearance();render();
+log("FOX NEXUS загружен · прогресс восстановлен");
+autoTimer=setInterval(economyTick,1000);
+renderTimer=setInterval(()=>save(true),15000);
+</script>
+</body>
+</html>

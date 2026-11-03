@@ -1,0 +1,62 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список Задач</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="comtainer"> 
+           <h1>Список Задач</h1>
+           <form class="add-form" action="/add" method="post">
+            <input type="text" placeholder="Введите Задачу" name = "task">
+            <button type="submit">Добавить </button>
+           </form>
+           <div class = "tasks">
+                {% if tasks %}
+                    {% for task in tasks %}
+                        <div class="task">
+                            <span>{{ task }}</span>
+                            <div class="task-actions">
+                                <button class="action-btn edit-btn" data-index="{{ loop.index0 }}" data-text="{{ task }}" onclick="openEditModal(this)" >✏️</button>
+                                <form action="/delete/{{ loop.index0 }}" method="post">
+                                    <button type="submit">🗑️ </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty">Задач пока нет</p>
+                {% endif %}
+           </div>
+    </div>
+    <div class="modal-bg" id="editModal">
+        <div class="modal-window">
+            <h2>Редактировать Задачу</h2>
+            <form id="editForm" method="post">
+                <input type="text" placeholder="Введите Новое Название" name = "task" id="editInput">
+                <div class="modal-btns">
+                <button type="submit" class="save-btm">✓</button>
+                <button type="button" class="cancel-btm" onclick="closeEditModal()">✘</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        const editModal = document.getElementById("editModal")
+        const editForm = document.getElementById("editForm")
+        const editInput = document.getElementById("editInput")
+        function closeEditModal(){
+            editModal.classList.remove("active")
+        }
+        function openEditModal(button){
+            const tasktext = button.dataset.text
+            const taskindex = button.dataset.index
+            editModal.classList.add("active")
+            editInput.value=tasktext
+            editForm.action="/edit/"+taskindex
+            editInput.focus()
+        }
+    </script>
+</body>
+</html>
